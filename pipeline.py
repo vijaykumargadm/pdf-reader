@@ -147,11 +147,15 @@ def summarize_pdf(
     include_analysis: bool = False,
     include_quotes: bool = False,
     progress: ProgressFn | None = None,
+    engine: GeminiSummarizer | None = None,
 ) -> SummaryResult:
-    """Run the whole map-reduce pipeline for one PDF."""
+    """Run the whole map-reduce pipeline for one PDF.
+
+    Pass ``engine`` to share one client (and ledger) with follow-up steps such as RAG.
+    """
     settings = settings or get_settings()
     pdf_path = Path(path)
-    engine = GeminiSummarizer(settings)
+    engine = engine or GeminiSummarizer(settings)
     warnings: list[str] = []
 
     pages, used_ocr, ocr_count, total_pages = load_pages(

@@ -51,25 +51,26 @@ work on `feat/pdf-summarizer`, merge by PR, tag `v1.0.0`.
 
 **Exit:** ✅ live run: 5 calls, 2,424 in / 1,424 out, quotes cited by page.
 
-## Phase 4 — Chat with PDF (RAG)
+## Phase 4 — Chat with PDF (RAG) ✅
 
-- [ ] Gemini embeddings, local Chroma persistence
-- [ ] Chunk metadata carries page numbers
-- [ ] Grounded answer chain with citations
-- [ ] Refusal when retrieval returns nothing
-- [ ] Tests with a stubbed retriever
+- [x] Gemini embeddings (`gemini-embedding-001`), local Chroma persistence
+- [x] Chunk metadata carries page numbers and labels
+- [x] Grounded answer chain with inline `[n]` citations
+- [x] Refusal when retrieval returns nothing (no model call, no tokens)
+- [x] Content-addressed collections so re-indexing never duplicates
+- [x] Tests with a local embedding stub
 
-**Exit:** question → answer with page citations; empty retrieval → explicit "not in the document".
+**Exit:** ✅ live: 2 chunks indexed, answer cited `[1] pp.5-6` (score 0.71).
 
-## Phase 5 — Streamlit UI
+## Phase 5 — Streamlit UI ✅
 
-- [ ] Multi-PDF upload, sidebar (model, style, chunk size/overlap, OCR toggle)
-- [ ] Progress reporting per chunk
-- [ ] Tabs: Summary · Chat · Structure · Quotes · Stats & Cost
-- [ ] Downloads: markdown, txt, CSV
-- [ ] Session-state caching so re-runs don't re-bill
+- [x] Multi-PDF upload, sidebar (model, style, chunk size/overlap, OCR toggle)
+- [x] Progress reporting per chunk, per file
+- [x] Tabs: Summary · Chat · Structure · Quotes · Stats & Cost
+- [x] Downloads: markdown, txt, CSV
+- [x] Session-state caching keyed on file digest + settings so re-runs don't re-bill
 
-**Exit:** full flow works from a cold `streamlit run app.py`.
+**Exit:** ✅ `streamlit run app.py` renders; `AppTest` smoke test in the suite.
 
 ## Phase 6 — Tests & CI
 

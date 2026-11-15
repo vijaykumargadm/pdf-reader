@@ -96,6 +96,21 @@ QUOTES = _template(
     'Material:\n"""\n{text}\n"""'
 )
 
+#: Sentinel the model must return when the retrieved passages cannot answer.
+NOT_IN_DOCUMENT = "NOT_IN_DOCUMENT"
+
+RAG_ANSWER = _template(
+    "Answer the question using only the numbered passages below.\n\n"
+    "Rules:\n"
+    "- Cite the passages you rely on as [1], [2] inline, right after the claim.\n"
+    "- Copy figures and names exactly as they appear.\n"
+    "- If the passages do not contain the answer, reply with exactly: NOT_IN_DOCUMENT\n"
+    "- Keep it under 200 words unless the question asks for detail.\n\n"
+    "Passages:\n{passages}\n\n"
+    "Earlier conversation:\n{history}\n\n"
+    "Question: {question}"
+)
+
 OCR_PAGE = _template(
     "Transcribe every word on this page image exactly as it appears.\n\n"
     "Rules:\n"

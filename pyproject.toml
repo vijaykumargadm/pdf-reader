@@ -17,6 +17,7 @@ py-modules = [
     "pdf_processor",
     "pipeline",
     "prompts",
+    "rag",
     "summarizer",
     "utils",
 ]

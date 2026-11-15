@@ -7,6 +7,7 @@ import logging
 import random
 import time
 from collections.abc import Callable, Sequence
+from typing import TYPE_CHECKING
 
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -14,8 +15,20 @@ from langchain_google_genai import ChatGoogleGenerativeAI
 from config import Settings
 from errors import ConfigError, ModelNotFoundError, RateLimitError, SummarizationError
 from pdf_processor import Chunk, PageText, count_tokens
-from prompts import ANALYSIS, CHUNK_SUMMARY, COMBINE, OCR_PAGE, QUOTES, REDUCE, style_instruction
+from prompts import (
+    ANALYSIS,
+    CHUNK_SUMMARY,
+    COMBINE,
+    OCR_PAGE,
+    QUOTES,
+    RAG_ANSWER,
+    REDUCE,
+    style_instruction,
+)
 from utils import CostLedger, truncate_to_tokens
+
+if TYPE_CHECKING:
+    from rag import Passage
 
 log = logging.getLogger(__name__)
 
@@ -275,6 +288,32 @@ class GeminiSummarizer:
         if progress:
             progress(0.95, "Extracting key quotes")
         return self._render(QUOTES, "quotes", text=self._aux_material(material))
+
+    def answer_question(
+        self,
+        question: str,
+        passages: Sequence[Passage],
+        *,
+        history: Sequence[tuple[str, str]] | None = None,
+    ) -> str:
+        """Grounded answer over retrieved passages. Returns the NOT_IN_DOCUMENT sentinel."""
+        numbered = [
+            f"[{position}] ({passage.page_label})\n{passage.text}"
+            for position, passage in enumerate(passages, start=1)
+        ]
+        if history:
+            turns = "\n".join(
+                f"Q: {asked}\nA: {answered}" for asked, answered in list(history)[-4:]
+            )
+        else:
+            turns = "None."
+        return self._render(
+            RAG_ANSWER,
+            "rag",
+            passages="\n\n".join(numbered),
+            history=turns,
+            question=question,
+        )
 
     def healthcheck(self) -> str:
         """Tiny call used by the UI to prove the key and model still work."""

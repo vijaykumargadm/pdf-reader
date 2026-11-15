@@ -11,12 +11,13 @@ from functools import lru_cache
 from pathlib import Path
 from typing import NamedTuple
 
-from pydantic import Field, SecretStr, field_validator, model_validator
+from pydantic import AliasChoices, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parent
 
 DEFAULT_MODEL = "gemini-3.1-flash-lite"
+DEFAULT_EMBEDDING_MODEL = "gemini-embedding-001"
 
 #: Models this app is known to work with. The live ``/models`` list for a given
 #: key is the real source of truth; this list only powers UI dropdowns.
@@ -54,10 +55,16 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
+        populate_by_name=True,
     )
 
     gemini_api_key: SecretStr = Field(description="Google AI Studio API key")
     gemini_model: str = DEFAULT_MODEL
+    embedding_model: str = Field(
+        default=DEFAULT_EMBEDDING_MODEL,
+        validation_alias=AliasChoices("GEMINI_EMBEDDING_MODEL", "EMBEDDING_MODEL"),
+        description="Embedding model used to build the chat index",
+    )
 
     # Chunking (token based, measured with tiktoken as a proxy for Gemini tokens).
     chunk_size: int = Field(default=4000, ge=100, le=100_000)
@@ -84,6 +91,11 @@ class Settings(BaseSettings):
     @field_validator("gemini_model")
     @classmethod
     def _normalise_model(cls, value: str) -> str:
+        return value.strip().removeprefix("models/")
+
+    @field_validator("embedding_model")
+    @classmethod
+    def _normalise_embedding_model(cls, value: str) -> str:
         return value.strip().removeprefix("models/")
 
     @field_validator("log_level")

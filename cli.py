@@ -41,6 +41,10 @@ def _parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--chunk-size", type=int, default=None, help="tokens per chunk")
     parser.add_argument("--chunk-overlap", type=int, default=None, help="overlap between chunks")
+    parser.add_argument(
+        "--ask", default=None, help="ask a question about the PDF after summarising"
+    )
+    parser.add_argument("--top-k", type=int, default=5, help="passages to retrieve (default: 5)")
     parser.add_argument("--no-ocr", action="store_true", help="skip the OCR fallback for scans")
     parser.add_argument("--quiet", action="store_true", help="no progress output")
     parser.add_argument("--check", action="store_true", help="verify the key and model, then exit")
@@ -104,6 +108,7 @@ def main(argv: list[str] | None = None) -> int:
         _parser().error("a PDF path is required unless --check is used")
         return 2
 
+    engine = GeminiSummarizer(settings)
     try:
         result = summarize_pdf(
             args.pdf,
@@ -112,6 +117,7 @@ def main(argv: list[str] | None = None) -> int:
             include_analysis=args.analysis,
             include_quotes=args.quotes,
             progress=None if args.quiet else _progress,
+            engine=engine,
         )
     except PdfReaderError as exc:
         print(f"\nerror: {exc}", file=sys.stderr)
@@ -125,6 +131,29 @@ def main(argv: list[str] | None = None) -> int:
 
     print(result.summary.strip())
     print(file=sys.stderr)
+
+    if args.ask:
+        from rag import RagChat, build_index
+
+        try:
+            index = build_index(result.chunks, result.document, settings)
+            reply = RagChat(index, engine).ask(args.ask, k=args.top_k)
+        except PdfReaderError as exc:
+            print(f"\nrag error: {exc}", file=sys.stderr)
+            return 1
+
+        print(f"Q: {args.ask}")
+        print()
+        print(reply.answer)
+        if reply.sources:
+            print("\nSources:", file=sys.stderr)
+            for position, passage in enumerate(reply.sources, start=1):
+                print(
+                    f"  [{position}] {passage.page_label} (score {passage.score:.2f})",
+                    file=sys.stderr,
+                )
+        print(file=sys.stderr)
+
     print(result.ledger.summary(), file=sys.stderr)
 
     if args.out:

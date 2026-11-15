@@ -15,9 +15,9 @@ Built in phases — see [ROADMAP.md](ROADMAP.md) for the plan and current status
 | 1 | Skeleton & config | ✅ complete |
 | 2 | PDF ingestion (+ OCR fallback) | ✅ complete |
 | 3 | Summarisation core | ✅ complete |
-| 4 | Chat with PDF (RAG) | ⬜ next |
-| 5 | Streamlit UI | ⬜ |
-| 6 | Tests & CI | ⬜ |
+| 4 | Chat with PDF (RAG) | ✅ complete |
+| 5 | Streamlit UI | ✅ complete |
+| 6 | Tests & CI | ⬜ next |
 | 7 | Docs & release | ⬜ |
 
 ## Requirements
@@ -36,7 +36,18 @@ Copy-Item .env.example .env    # then put your key in .env
 
 ## Run
 
-The pipeline is fully usable from the CLI today:
+### Streamlit UI
+
+```powershell
+streamlit run app.py
+```
+
+Upload one or more PDFs, pick a style, and press **Summarise**. Tabs give you the
+summary, chat-with-document (RAG, with page citations), structure analysis, key
+quotes, and a token/cost breakdown. Results are cached in session state, so
+changing a tab never re-bills you.
+
+### CLI
 
 ```powershell
 # verify the key and model
@@ -47,10 +58,12 @@ python cli.py data\uploads\demo.pdf --style detailed --analysis --quotes --out s
 
 # force several chunks to exercise map-reduce
 python cli.py data\uploads\demo.pdf --chunk-size 300 --chunk-overlap 40 --stats stats.csv
+
+# ask a question about the document (builds a Chroma index)
+python cli.py data\uploads\demo.pdf --ask "What is the biggest risk?"
 ```
 
-Styles: `brief`, `detailed`, `bullet_points`, `executive`. The Streamlit UI lands in
-Phase 5 (`streamlit run app.py`).
+Styles: `brief`, `detailed`, `bullet_points`, `executive`.
 
 ## Tests
 
@@ -63,13 +76,17 @@ pytest
 ## Layout
 
 ```
-app.py            Streamlit UI
+app.py            Streamlit UI (tabs, uploads, downloads)
+cli.py            Command-line entry point
 config.py         Settings, model + pricing tables
-pdf_processor.py  Extraction, cleaning, chunking, OCR fallback
-summarizer.py     Gemini calls: chunk summaries, combine, analysis, quotes
+errors.py         Typed exceptions
+logging_setup.py  Logging + key masking
+pdf_processor.py  Extraction, cleaning, chunking, OCR rendering
+pipeline.py       Orchestration: file -> pages -> chunks -> summary
 prompts.py        All ChatPromptTemplate definitions
-rag.py            Embeddings, Chroma store, retrieval chain
-utils.py          Display, exports, statistics, token accounting
+rag.py            Gemini embeddings, Chroma store, grounded chat
+summarizer.py     Gemini calls: chunk summaries, combine, analysis, quotes, RAG
+utils.py          Token accounting, cost ledger, formatting helpers
 tests/            pytest suite
 ```
 
