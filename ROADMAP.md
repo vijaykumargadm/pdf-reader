@@ -82,10 +82,13 @@ work on `feat/pdf-summarizer`, merge by PR, tag `v1.0.0`.
 
 **Exit:** ✅ 47 tests pass locally · CI green on the PR.
 
-## Phase 7 — Docs & release
+## Phase 7 — Docs & release ✅
 
-- [ ] README: architecture diagram, screenshots, cost notes, troubleshooting
-- [ ] PR from `feat/pdf-summarizer` → `main`
-- [ ] Tag `v1.0.0`, verify remote state
+- [x] README: architecture diagram, UI tab walkthrough, config table, cost notes, troubleshooting, limitations
+- [x] PR from `feat/pdf-summarizer` → `main`
+- [x] Tag `v1.0.0`, verify remote state
 
-**Exit:** `main` matches local, tag visible on GitHub, `.env` never in history.
+**Exit:** ✅ `main` matches local, tag visible on GitHub, `.env` never in history.
+
+> Screenshots are not included: this environment has no browser to capture the
+> Streamlit UI. The tab walkthrough in the README stands in for them.

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pdf-reader"
-version = "0.1.0"
+version = "1.0.0"
 description = "End-to-end LangChain + Gemini PDF summariser with Streamlit UI, RAG chat and token accounting"
 requires-python = ">=3.12"
 

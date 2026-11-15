@@ -11,7 +11,7 @@ import logging
 import sys
 from pathlib import Path
 
-from config import DEFAULT_MODEL, SUMMARY_STYLES, Settings, get_settings
+from config import DEFAULT_MODEL, SUMMARY_STYLES, Settings, __version__, get_settings
 from errors import PdfReaderError
 from logging_setup import configure_logging, mask_secret
 from pipeline import summarize_pdf
@@ -26,6 +26,7 @@ def _parser() -> argparse.ArgumentParser:
         description="Summarise a PDF with LangChain + Gemini.",
     )
     parser.add_argument("pdf", nargs="?", type=Path, help="path to the PDF to summarise")
+    parser.add_argument("--version", action="version", version=f"pdf-reader {__version__}")
     parser.add_argument(
         "--style",
         choices=SUMMARY_STYLES,

@@ -16,6 +16,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT = Path(__file__).resolve().parent
 
+__version__ = "1.0.0"
+
 DEFAULT_MODEL = "gemini-3.1-flash-lite"
 DEFAULT_EMBEDDING_MODEL = "gemini-embedding-001"
 
