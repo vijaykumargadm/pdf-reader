@@ -72,14 +72,15 @@ work on `feat/pdf-summarizer`, merge by PR, tag `v1.0.0`.
 
 **Exit:** ✅ `streamlit run app.py` renders; `AppTest` smoke test in the suite.
 
-## Phase 6 — Tests & CI
+## Phase 6 — Tests & CI ✅
 
-- [ ] Unit tests (chunking, cleaning, cost math, prompts)
-- [ ] Mocked-LLM tests, one opt-in live test (`-m live`)
-- [ ] `ruff check` + `pytest` green locally
-- [ ] GitHub Actions workflow (needs `workflow` scope on the gh token)
+- [x] Unit tests (chunking, cleaning, cost math, prompts, pipeline, RAG, app)
+- [x] Mocked-LLM tests, opt-in live tests (`pytest -m live`, deselected by default)
+- [x] `ruff check` + `ruff format --check` + `pytest` green locally
+- [x] GitHub Actions workflow on Python 3.12 (lint + test, no API key needed)
+- [x] `pre-commit` with ruff, whitespace and secret checks
 
-**Exit:** CI green on the PR.
+**Exit:** ✅ 47 tests pass locally · CI green on the PR.
 
 ## Phase 7 — Docs & release
 

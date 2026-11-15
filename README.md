@@ -70,8 +70,13 @@ Styles: `brief`, `detailed`, `bullet_points`, `executive`.
 ```powershell
 pip install -r requirements-dev.txt
 ruff check .
-pytest
+ruff format --check .
+pytest              # 47 tests, no API calls
+pytest -m live      # 2 tests that call Gemini for real (costs tokens)
+pre-commit install  # optional: lint + format on every commit
 ```
+
+CI runs the same lint and test commands on Python 3.12 via GitHub Actions.
 
 ## Layout
 
