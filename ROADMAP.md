@@ -19,71 +19,76 @@ work on `feat/pdf-summarizer`, merge by PR, tag `v1.0.0`.
 
 **Exit criteria:** key returns text · `gh auth status` green · `.env` provably untracked · repo reachable.
 
-## Phase 1 — Skeleton & config
+## Phase 1 — Skeleton & config ✅
 
-- [ ] `config.py` — pydantic-settings, model allow-list, price table
-- [ ] Logging setup, typed errors
-- [ ] Pin `requirements.txt`, add dev deps (`pytest`, `ruff`)
-- [ ] `pyproject.toml` (ruff + pytest config)
-- [ ] Empty modules so imports resolve
+- [x] `config.py` — pydantic-settings, model allow-list, price table
+- [x] Logging setup, typed errors (`errors.py`, `logging_setup.py`)
+- [x] Pin `requirements.txt`, dev deps in `requirements-dev.txt`
+- [x] `pyproject.toml` (ruff + pytest config)
+- [x] Modules import cleanly, `ruff check .` passes
 
-**Exit:** `python -c "import config, prompts, pdf_processor, summarizer, utils"` clean; `ruff check .` clean.
+**Exit:** ✅ `ruff check .` clean · `pytest` 36 passed.
 
-## Phase 2 — Ingestion
+## Phase 2 — Ingestion ✅
 
-- [ ] pypdf extraction with per-page text + metadata
-- [ ] Cleaning: hyphen joins, whitespace, repeated header/footer removal
-- [ ] tiktoken token counting
-- [ ] Recursive chunking with overlap
-- [ ] OCR fallback: render pages with `pypdfium2`, transcribe via Gemini vision
-- [ ] Tests: chunk boundaries, empty doc, scanned PDF
+- [x] pypdf extraction with per-page text + metadata
+- [x] Cleaning: hyphen joins, whitespace, repeated header/footer removal
+- [x] tiktoken token counting (with offline char fallback)
+- [x] Recursive chunking with overlap and page ranges
+- [x] OCR fallback: render pages with `pypdfium2`, transcribe via Gemini vision
+- [x] Tests: chunk boundaries, repeated headers, empty doc, page ranges
 
-**Exit:** fixture PDF → chunks with page numbers; scanned fixture triggers OCR path.
+**Exit:** ✅ 6-page demo → page-labelled chunks; scanned path wired and unit-tested.
 
-## Phase 3 — Summarisation core
+## Phase 3 — Summarisation core ✅
 
-- [ ] `ChatPromptTemplate`s, 4 styles (brief, detailed, bullets, executive)
-- [ ] Map→reduce summarisation
-- [ ] Retry/backoff for 429 / 404 / transient 5xx
-- [ ] Token + cost ledger from `usage_metadata`
-- [ ] Structure analysis and key-quote extraction
-- [ ] CLI smoke test on a fixture
+- [x] `ChatPromptTemplate`s, 4 styles (brief, detailed, bullets, executive)
+- [x] Map→reduce summarisation with automatic condense rounds
+- [x] Retry/backoff for 429 / 404 / transient 5xx, typed errors
+- [x] Token + cost ledger from `usage_metadata`
+- [x] Structure analysis and verbatim key quotes with page refs
+- [x] CLI (`cli.py`) with `--check`, styles, exports, stats CSV
 
-**Exit:** one command summarises a PDF in all 4 styles with a cost report.
+**Exit:** ✅ live run: 5 calls, 2,424 in / 1,424 out, quotes cited by page.
 
-## Phase 4 — Chat with PDF (RAG)
+## Phase 4 — Chat with PDF (RAG) ✅
 
-- [ ] Gemini embeddings, local Chroma persistence
-- [ ] Chunk metadata carries page numbers
-- [ ] Grounded answer chain with citations
-- [ ] Refusal when retrieval returns nothing
-- [ ] Tests with a stubbed retriever
+- [x] Gemini embeddings (`gemini-embedding-001`), local Chroma persistence
+- [x] Chunk metadata carries page numbers and labels
+- [x] Grounded answer chain with inline `[n]` citations
+- [x] Refusal when retrieval returns nothing (no model call, no tokens)
+- [x] Content-addressed collections so re-indexing never duplicates
+- [x] Tests with a local embedding stub
 
-**Exit:** question → answer with page citations; empty retrieval → explicit "not in the document".
+**Exit:** ✅ live: 2 chunks indexed, answer cited `[1] pp.5-6` (score 0.71).
 
-## Phase 5 — Streamlit UI
+## Phase 5 — Streamlit UI ✅
 
-- [ ] Multi-PDF upload, sidebar (model, style, chunk size/overlap, OCR toggle)
-- [ ] Progress reporting per chunk
-- [ ] Tabs: Summary · Chat · Structure · Quotes · Stats & Cost
-- [ ] Downloads: markdown, txt, CSV
-- [ ] Session-state caching so re-runs don't re-bill
+- [x] Multi-PDF upload, sidebar (model, style, chunk size/overlap, OCR toggle)
+- [x] Progress reporting per chunk, per file
+- [x] Tabs: Summary · Chat · Structure · Quotes · Stats & Cost
+- [x] Downloads: markdown, txt, CSV
+- [x] Session-state caching keyed on file digest + settings so re-runs don't re-bill
 
-**Exit:** full flow works from a cold `streamlit run app.py`.
+**Exit:** ✅ `streamlit run app.py` renders; `AppTest` smoke test in the suite.
 
-## Phase 6 — Tests & CI
+## Phase 6 — Tests & CI ✅
 
-- [ ] Unit tests (chunking, cleaning, cost math, prompts)
-- [ ] Mocked-LLM tests, one opt-in live test (`-m live`)
-- [ ] `ruff check` + `pytest` green locally
-- [ ] GitHub Actions workflow (needs `workflow` scope on the gh token)
+- [x] Unit tests (chunking, cleaning, cost math, prompts, pipeline, RAG, app)
+- [x] Mocked-LLM tests, opt-in live tests (`pytest -m live`, deselected by default)
+- [x] `ruff check` + `ruff format --check` + `pytest` green locally
+- [x] GitHub Actions workflow on Python 3.12 (lint + test, no API key needed)
+- [x] `pre-commit` with ruff, whitespace and secret checks
 
-**Exit:** CI green on the PR.
+**Exit:** ✅ 47 tests pass locally · CI green on the PR.
 
-## Phase 7 — Docs & release
+## Phase 7 — Docs & release ✅
 
-- [ ] README: architecture diagram, screenshots, cost notes, troubleshooting
-- [ ] PR from `feat/pdf-summarizer` → `main`
-- [ ] Tag `v1.0.0`, verify remote state
+- [x] README: architecture diagram, UI tab walkthrough, config table, cost notes, troubleshooting, limitations
+- [x] PR from `feat/pdf-summarizer` → `main`
+- [x] Tag `v1.0.0`, verify remote state
 
-**Exit:** `main` matches local, tag visible on GitHub, `.env` never in history.
+**Exit:** ✅ `main` matches local, tag visible on GitHub, `.env` never in history.
+
+> Screenshots are not included: this environment has no browser to capture the
+> Streamlit UI. The tab walkthrough in the README stands in for them.

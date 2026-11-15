@@ -15,7 +15,7 @@ dist/
 venv/
 
 # Local runtime data
-data/uploads/
+data/
 chroma_db/
 .cache/
 .streamlit/secrets.toml
