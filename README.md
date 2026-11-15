@@ -12,10 +12,10 @@ Built in phases — see [ROADMAP.md](ROADMAP.md) for the plan and current status
 | Phase | Scope | State |
 |---|---|---|
 | 0 | Toolchain, credentials, repo | ✅ complete |
-| 1 | Skeleton & config | ⬜ next |
-| 2 | PDF ingestion (+ OCR fallback) | ⬜ |
-| 3 | Summarisation core | ⬜ |
-| 4 | Chat with PDF (RAG) | ⬜ |
+| 1 | Skeleton & config | ✅ complete |
+| 2 | PDF ingestion (+ OCR fallback) | ✅ complete |
+| 3 | Summarisation core | ✅ complete |
+| 4 | Chat with PDF (RAG) | ⬜ next |
 | 5 | Streamlit UI | ⬜ |
 | 6 | Tests & CI | ⬜ |
 | 7 | Docs & release | ⬜ |
@@ -36,11 +36,29 @@ Copy-Item .env.example .env    # then put your key in .env
 
 ## Run
 
+The pipeline is fully usable from the CLI today:
+
 ```powershell
-streamlit run app.py
+# verify the key and model
+python cli.py --check
+
+# summarise one PDF
+python cli.py data\uploads\demo.pdf --style detailed --analysis --quotes --out summary.md
+
+# force several chunks to exercise map-reduce
+python cli.py data\uploads\demo.pdf --chunk-size 300 --chunk-overlap 40 --stats stats.csv
 ```
 
-> `app.py` lands in Phase 5; until then the pipeline is exercised from the CLI.
+Styles: `brief`, `detailed`, `bullet_points`, `executive`. The Streamlit UI lands in
+Phase 5 (`streamlit run app.py`).
+
+## Tests
+
+```powershell
+pip install -r requirements-dev.txt
+ruff check .
+pytest
+```
 
 ## Layout
 

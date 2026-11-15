@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pdf-reader"
+version = "0.1.0"
+description = "End-to-end LangChain + Gemini PDF summariser with Streamlit UI, RAG chat and token accounting"
+requires-python = ">=3.12"
+
+[tool.setuptools]
+py-modules = [
+    "cli",
+    "config",
+    "errors",
+    "logging_setup",
+    "pdf_processor",
+    "pipeline",
+    "prompts",
+    "summarizer",
+    "utils",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [".venv", "data", "chroma_db"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "C4", "PTH", "RUF"]
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q --strict-markers"
+markers = [
+    "live: hits the real Gemini API and costs tokens (deselected by default)",
+]
+filterwarnings = ["ignore::DeprecationWarning"]
